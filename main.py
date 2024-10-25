@@ -118,11 +118,14 @@ class CodeBuilderGUI:
         self.run_button = tk.Button(self.button_frame, text="Run Code", command=self.run_code)
         self.run_button.pack(side=tk.LEFT, padx=5)
 
-        self.save_button = tk.Button(self.button_frame, text="Save As", command=self.save_code)
+        self.save_button = tk.Button(self.button_frame, text="Save Code", command=self.save_code)
         self.save_button.pack(side=tk.LEFT, padx=5)
 
         self.copy_button = tk.Button(self.button_frame, text="Copy Code", command=self.copy_code)
         self.copy_button.pack(side=tk.LEFT, padx=5)
+
+        self.new_button = tk.Button(self.button_frame, text="New Code", command=self.new_code)
+        self.new_button.pack(side=tk.LEFT, padx=5)
 
         self.shift_indent_left_button = tk.Button(self.button_frame, text="Shift Indent Left", command=self.shift_indent_left)
         self.shift_indent_left_button.pack(side=tk.LEFT, padx=5)
@@ -133,8 +136,6 @@ class CodeBuilderGUI:
         self.text_area.bind("<KeyRelease>", self.update_line_numbers)
         self.text_area.bind("<Configure>", self.update_line_numbers)
 
-        self.update_save_button()
-
     def prevent_selection(self, event):
         return "break"
 
@@ -144,13 +145,11 @@ class CodeBuilderGUI:
             self.line_manager.add_line(line)
             self.update_text_area()
             self.saved = False
-            self.update_save_button()
 
     def add_blank_line(self):
         self.line_manager.add_blank_line()
         self.update_text_area()
         self.saved = False
-        self.update_save_button()
 
     def rearrange_line(self):
         index = simpledialog.askinteger("Input", "Enter the index of the line to move (1-based):") - 1
@@ -160,7 +159,6 @@ class CodeBuilderGUI:
                 self.line_manager.rearrange_line(index, new_index)
                 self.update_text_area()
                 self.saved = False
-                self.update_save_button()
             except IndexError:
                 messagebox.showerror("Error", "Invalid indices provided.")
 
@@ -172,7 +170,6 @@ class CodeBuilderGUI:
                 self.line_manager.edit_line(index, new_line)
                 self.update_text_area()
                 self.saved = False
-                self.update_save_button()
 
     def delete_line(self):
         index = simpledialog.askinteger("Input", "Enter the index of the line to delete (1-based):") - 1
@@ -181,7 +178,6 @@ class CodeBuilderGUI:
                 self.line_manager.delete_line(index)
                 self.update_text_area()
                 self.saved = False
-                self.update_save_button()
             except IndexError:
                 messagebox.showerror("Error", "Invalid index provided.")
 
@@ -205,13 +201,16 @@ class CodeBuilderGUI:
                 file.write(self.line_manager.get_code())
 
             self.saved = True
-            self.update_save_button()
         except FileNotFoundError:
             pass
 
     def copy_code(self):
         set_clipboard(self.line_manager.get_code())
         print("Copied code to clipboard!")
+
+    def new_code(self):
+        self.line_manager.code_lines.clear()
+        self.update_text_area()
 
     def shift_indent_right(self):
         index = simpledialog.askinteger("Input", "Enter the line number to shift right (1-based):") - 1
@@ -243,12 +242,6 @@ class CodeBuilderGUI:
             self.line_numbers.insert(tk.END, f"{i:>{max_digits}}\n")  # Right-align line numbers
 
         self.line_numbers.configure(state=tk.DISABLED, width=max_digits)
-
-    def update_save_button(self):
-        if self.saved:
-            self.save_button.configure(text="Save As")
-        else:
-            self.save_button.configure(text="Save")
 
 if __name__ == "__main__":
     root = tk.Tk()
