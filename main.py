@@ -79,7 +79,7 @@ class CodeBuilderGUI:
         self.text_area.bind("<Key>", lambda e: "break")
         self.text_area.bind("<FocusIn>", lambda e: self.text_area.focus_set())
 
-        self.line_numbers = tk.Text(self.frame, width=5, height=20, bg='lightgrey', state=tk.DISABLED)
+        self.line_numbers = tk.Text(self.frame, bg='lightgrey', state=tk.DISABLED, width=1)  # Set a default width
         self.line_numbers.pack(side=tk.LEFT, fill=tk.Y)
 
         self.line_numbers.bind("<Button-1>", self.prevent_selection)
@@ -235,9 +235,14 @@ class CodeBuilderGUI:
     def update_line_numbers(self, event=None):
         self.line_numbers.configure(state=tk.NORMAL)
         self.line_numbers.delete(1.0, tk.END)
+
+        # Calculate the maximum number of digits for line numbers
+        max_digits = len(str(len(self.line_manager.code_lines)))
+
         for i, _ in enumerate(self.line_manager.code_lines, start=1):
-            self.line_numbers.insert(tk.END, f"{i}\n")
-        self.line_numbers.configure(state=tk.DISABLED)
+            self.line_numbers.insert(tk.END, f"{i:>{max_digits}}\n")  # Right-align line numbers
+
+        self.line_numbers.configure(state=tk.DISABLED, width=max_digits)
 
     def update_save_button(self):
         if self.saved:
