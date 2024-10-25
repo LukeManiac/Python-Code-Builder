@@ -1,8 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog, filedialog
-from subprocess import call as call_command
-from platform import system as detect_os
 from pyperclip import copy as set_clipboard
+
 
 class CodeLineManager:
     def __init__(self):
@@ -10,7 +9,6 @@ class CodeLineManager:
         self.indentation_level = 0  # To track current indentation level
 
     def add_line(self, line):
-        # Automatically indent if needed
         if self.code_lines and self.code_lines[-1].strip().endswith(":"):
             self.indentation_level += 1
 
@@ -49,7 +47,7 @@ class CodeLineManager:
     def decrease_indent(self, index, indent_size=4):
         if 0 <= index < len(self.code_lines):
             current_indent = len(self.code_lines[index]) - len(self.code_lines[index].lstrip())
-            new_indent = max(0, current_indent - indent_size)  # Prevent negative indent
+            new_indent = max(0, current_indent - indent_size)
             self.indentation_level = max(0, self.indentation_level - 1)
             self.code_lines[index] = self.indent_line(self.code_lines[index].lstrip(), new_indent)
 
@@ -65,27 +63,48 @@ class CodeBuilderGUI:
         master.minsize(1000, 500)
 
         self.line_manager = CodeLineManager()
-        self.indent_size = 4  # Default indent size
+        self.indent_size = 4
         self.saved = True
         self.current_file = None
 
+        # Create a frame for the text area and line numbers
         self.frame = tk.Frame(master)
         self.frame.pack(expand=True, fill=tk.BOTH)
 
-        self.text_area = tk.Text(self.frame, wrap=tk.WORD, height=20, width=60, state=tk.DISABLED)
-        self.text_area.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH)
+        # Create a vertical scrollbar
+        self.scrollbar = tk.Scrollbar(self.frame)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.text_area.bind("<Button-1>", self.prevent_selection)
-        self.text_area.bind("<Key>", lambda e: "break")
-        self.text_area.bind("<FocusIn>", lambda e: self.text_area.focus_set())
+        # Configure scrollbar
+        self.scrollbar.config(command=self.on_scroll)
 
-        self.line_numbers = tk.Text(self.frame, bg='lightgrey', state=tk.DISABLED, width=1)  # Set a default width
+        # Create line numbers text widget
+        self.line_numbers = tk.Text(self.frame, bg='lightgrey', state=tk.DISABLED, width=1, height=20)
         self.line_numbers.pack(side=tk.LEFT, fill=tk.Y)
 
         self.line_numbers.bind("<Button-1>", self.prevent_selection)
         self.line_numbers.bind("<Key>", lambda e: "break")
         self.line_numbers.bind("<FocusIn>", lambda e: self.line_numbers.focus_set())
 
+        # Prevent scrolling with mouse wheel/trackpad
+        self.line_numbers.bind("<MouseWheel>", lambda e: "break")  # For Windows
+        self.line_numbers.bind("<Button-4>", lambda e: "break")    # For Linux
+        self.line_numbers.bind("<Button-5>", lambda e: "break")    # For Linux
+
+        # Create text area
+        self.text_area = tk.Text(self.frame, wrap=tk.WORD, height=20, width=60, yscrollcommand=self.scrollbar.set, state=tk.NORMAL)
+        self.text_area.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+        self.text_area.bind("<Button-1>", self.prevent_selection)
+        self.text_area.bind("<Key>", lambda e: "break")
+        self.text_area.bind("<FocusIn>", lambda e: self.text_area.focus_set())
+
+        # Prevent scrolling with mouse wheel/trackpad
+        self.text_area.bind("<MouseWheel>", lambda e: "break")  # For Windows
+        self.text_area.bind("<Button-4>", lambda e: "break")    # For Linux
+        self.text_area.bind("<Button-5>", lambda e: "break")    # For Linux
+
+        # Button frame
         self.button_frame = tk.Frame(master)
         self.button_frame.pack(pady=10, side=tk.BOTTOM)
 
@@ -237,13 +256,17 @@ class CodeBuilderGUI:
         self.line_numbers.configure(state=tk.NORMAL)
         self.line_numbers.delete(1.0, tk.END)
 
-        # Calculate the maximum number of digits for line numbers
         max_digits = len(str(len(self.line_manager.code_lines)))
 
         for i, _ in enumerate(self.line_manager.code_lines, start=1):
-            self.line_numbers.insert(tk.END, f"{i:>{max_digits}}\n")  # Right-align line numbers
+            self.line_numbers.insert(tk.END, f"{i:>{max_digits}}\n")
 
         self.line_numbers.configure(state=tk.DISABLED, width=max_digits)
+
+    def on_scroll(self, *args):
+        self.text_area.yview(*args)
+        self.line_numbers.yview(*args)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
