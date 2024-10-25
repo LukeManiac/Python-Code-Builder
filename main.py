@@ -43,26 +43,26 @@ class CodeLineManager:
 
     def increase_indent(self, index, indent_size=4):
         if 0 <= index < len(self.code_lines):
-            self.code_lines[index] = self.indent_line(self.code_lines[index].lstrip(), indent_size)
+            self.code_lines[index] = self.indent_line(self.code_lines[index], indent_size)
             self.indentation_level += 1
 
     def decrease_indent(self, index, indent_size=4):
         if 0 <= index < len(self.code_lines):
-            current_indent = len(self.code_lines[index]) - len(self.code_lines[index].lstrip())
+            current_indent = len(self.code_lines[index]) - len(self.code_lines[index])
             new_indent = max(0, current_indent - indent_size)  # Prevent negative indent
             self.indentation_level = max(0, self.indentation_level - 1)
-            self.code_lines[index] = self.indent_line(self.code_lines[index].lstrip(), new_indent)
+            self.code_lines[index] = self.indent_line(self.code_lines[index], new_indent)
 
     def set_indent_size(self, new_indent_size):
         for i in range(len(self.code_lines)):
-            self.code_lines[i] = self.indent_line(self.code_lines[i].lstrip(), new_indent_size)
+            self.code_lines[i] = self.indent_line(self.code_lines[i], new_indent_size)
 
 
 class CodeBuilderGUI:
     def __init__(self, master):
         self.master = master
         master.title("Python Code Builder")
-        master.minsize(900, 600)
+        master.minsize(1000, 500)
 
         self.line_manager = CodeLineManager()
         self.indent_size = 4  # Default indent size
