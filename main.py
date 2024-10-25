@@ -136,6 +136,8 @@ class CodeBuilderGUI:
         self.text_area.bind("<KeyRelease>", self.update_line_numbers)
         self.text_area.bind("<Configure>", self.update_line_numbers)
 
+        self.update_line_numbers()
+
     def prevent_selection(self, event):
         return "break"
 
