@@ -27,7 +27,8 @@ texts = {
         "Enter the new line of code:",
         "Enter the index of the line to delete",
         "Enter the line number to shift left",
-        "Enter the line number to shift right"
+        "Enter the line number to shift right",
+        "Copied to clipboard!"
     ],
     "French": [
         "Python Code Builder",
@@ -53,7 +54,8 @@ texts = {
         "Entrer la nouvelle ligne de code :",
         "Entrer l'index de la ligne à supprimer",
         "Entrer le numéro de ligne à décaler vers la gauche",
-        "Entrer le numéro de ligne à décaler vers la droite"
+        "Entrer le numéro de ligne à décaler vers la droite",
+        "Copié dans le presse-papiers !"
     ],
     "German": [
         "Python Code Builder",
@@ -79,7 +81,8 @@ texts = {
         "Neue Codezeile eingeben:",
         "Index der zu löschenden Zeile eingeben",
         "Zeilennummer eingeben, die nach links verschoben werden soll",
-        "Zeilennummer eingeben, die nach rechts verschoben werden soll"
+        "Zeilennummer eingeben, die nach rechts verschoben werden soll",
+        "In die Zwischenablage kopiert!"
     ],
     "Spanish": [
         "Generador de código Python",
@@ -105,7 +108,8 @@ texts = {
         "Ingresar la nueva línea de código:",
         "Ingresar el índice de la línea que se va a eliminar",
         "Ingresar el número de línea que se va a desplazar a la izquierda",
-        "Ingresar el número de línea que se va a desplazar a la derecha"
+        "Ingresar el número de línea que se va a desplazar a la derecha",
+        "Copiado al portapapeles!"
     ],
     "Italian": [
         "Python Code Builder",
@@ -131,7 +135,8 @@ texts = {
         "Inserisci la nuova riga di codice:",
         "Inserisci l'indice della riga da eliminare",
         "Inserisci il numero di riga da spostare a sinistra",
-        "Inserisci il numero di riga da spostare a destra"
+        "Inserisci il numero di riga da spostare a destra",
+        "Copiato negli appunti!"
     ],
     "Dutch": [
         "Python Code Builder",
@@ -157,7 +162,8 @@ texts = {
         "Voer de nieuwe regel code in:",
         "Voer de index in van de regel die u wilt verwijderen",
         "Voer het regelnummer in dat u naar links wilt verschuiven",
-        "Voer het regelnummer in dat u naar rechts wilt verschuiven"
+        "Voer het regelnummer in dat u naar rechts wilt verschuiven",
+        "Gekopieerd naar klembord!"
     ],
     "Portuguese": [
         "Python Code Builder",
@@ -183,7 +189,8 @@ texts = {
         "Digite a nova linha de código:",
         "Digite o índice da linha a ser excluída",
         "Digite o número da linha a ser deslocada para a esquerda",
-        "Digite o número da linha a ser deslocada para a direita"
+        "Digite o número da linha a ser deslocada para a direita",
+        "Copiado para a área de transferência!"
     ],
     "Russian": [
         "Python Code Builder",
@@ -209,7 +216,8 @@ texts = {
         "Введите новую строку кода:",
         "Введите индекс строки для удаления",
         "Введите номер строки для сдвига влево",
-        "Введите номер строки для сдвига вправо"
+        "Введите номер строки для сдвига вправо",
+        "Скопировано в буфер обмена!"
     ],
     "Japanese": [
         "Python コード ビルダー",
@@ -235,7 +243,8 @@ texts = {
         "新しいコード行を入力:",
         "削除する行のインデックスを入力",
         "左にシフトする行番号を入力",
-        "右にシフトする行番号を入力"
+        "右にシフトする行番号を入力",
+        "クリップボードにコピーされました!"
     ],
     "Chinese (traditional)": [
         "Python 程式碼產生器",
@@ -261,7 +270,8 @@ texts = {
         "輸入新的程式碼行：",
         "輸入要刪除的行的索引",
         "輸入要左移的行號",
-        "輸入要右移的行號"
+        "輸入要右移的行號",
+        "已複製到剪貼簿！"
     ],
     "Chinese (simplified)": [
         "Python 代码生成器",
@@ -287,7 +297,8 @@ texts = {
         "输入新代码行：",
         "输入要删除的行的索引",
         "输入要左移的行号",
-        "输入要右移的行号"
+        "输入要右移的行号",
+        "已复制到剪贴板！"
     ],
     "Korean": [
         "Python 코드 빌더",
@@ -313,7 +324,8 @@ texts = {
         "새 코드 줄을 입력하세요:",
         "삭제할 줄의 인덱스를 입력하세요",
         "왼쪽으로 이동할 줄 번호를 입력하세요",
-        "오른쪽으로 이동할 줄 번호를 입력하세요"
+        "오른쪽으로 이동할 줄 번호를 입력하세요",
+        "클립보드에 복사되었습니다!"
     ]
 }
 widths = {
@@ -429,7 +441,6 @@ class CodeBuilderGUI:
 
         self.line_manager = CodeLineManager()
         self.indent_size = 4
-        self.saved = True
         self.current_file = None
 
         # Create a frame for the text area and line numbers
@@ -530,12 +541,10 @@ class CodeBuilderGUI:
         if line:
             self.line_manager.add_line(line)
             self.update_text_area()
-            self.saved = False
 
     def add_blank_line(self):
         self.line_manager.add_blank_line()
         self.update_text_area()
-        self.saved = False
 
     def rearrange_line(self):
         try:
@@ -546,7 +555,6 @@ class CodeBuilderGUI:
                     try:
                         self.line_manager.rearrange_line(index, new_index)
                         self.update_text_area()
-                        self.saved = False
                     except IndexError:
                         messagebox.showerror("Error", self.text_list[18])
             except:
@@ -562,7 +570,6 @@ class CodeBuilderGUI:
                 if new_line:
                     self.line_manager.edit_line(index, new_line)
                     self.update_text_area()
-                    self.saved = False
         except:
             pass
 
@@ -573,7 +580,6 @@ class CodeBuilderGUI:
                 try:
                     self.line_manager.delete_line(index)
                     self.update_text_area()
-                    self.saved = False
                 except IndexError:
                     messagebox.showerror("Error", self.text_list[18])
         except:
@@ -587,24 +593,17 @@ class CodeBuilderGUI:
             messagebox.showerror("Error", str(e))
 
     def save_code(self):
-        if self.current_file is None:
-            file_path = filedialog.asksaveasfilename(defaultextension=".py", filetypes=[("Python files", "*.py, *.pyw, *.pyi"), ("Text files", "*.txt"), ("All Files", "*.*")])
-            if file_path:
-                self.current_file = file_path
-        else:
-            file_path = self.current_file
-
-        try:
-            with open(file_path, 'w') as file:
-                file.write(self.line_manager.get_code())
-
-            self.saved = True
-        except FileNotFoundError:
-            pass
+        file_path = filedialog.asksaveasfilename(defaultextension=".py", filetypes=[("Python files", "*.py, *.pyw, *.pyi"), ("Text files", "*.txt"), ("All Files", "*.*")])
+        if file_path:
+            try:
+                with open(file_path, 'w') as file:
+                    file.write(self.line_manager.get_code())
+            except FileNotFoundError:
+                pass
 
     def copy_code(self):
         set_clipboard(self.line_manager.get_code())
-        print("Copied code to clipboard!")
+        print(self.text_list[24])
 
     def new_code(self):
         self.line_manager.code_lines.clear()
