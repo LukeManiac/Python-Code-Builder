@@ -173,34 +173,46 @@ class CodeBuilderGUI:
         self.saved = False
 
     def rearrange_line(self):
-        index = simpledialog.askinteger("Input", "Enter the index of the line to move (1-based):") - 1
-        new_index = simpledialog.askinteger("Input", "Enter the new index for the line (1-based):") - 1
-        if index is not None and new_index is not None:
+        try:
+            index = simpledialog.askinteger("Input", f"Enter the index of the line to move (1-{len(self.line_manager.code_lines)}):") - 1
             try:
-                self.line_manager.rearrange_line(index, new_index)
-                self.update_text_area()
-                self.saved = False
-            except IndexError:
-                messagebox.showerror("Error", "Invalid indices provided.")
+                new_index = simpledialog.askinteger("Input", f"Enter the new index for the line (1-{len(self.line_manager.code_lines)}):") - 1
+                if index is not None and new_index is not None:
+                    try:
+                        self.line_manager.rearrange_line(index, new_index)
+                        self.update_text_area()
+                        self.saved = False
+                    except IndexError:
+                        messagebox.showerror("Error", "Invalid indices provided.")
+            except:
+                pass
+        except:
+            pass
 
     def edit_line(self):
-        index = simpledialog.askinteger("Input", "Enter the index of the line to edit (1-based):") - 1
-        if index is not None:
-            new_line = simpledialog.askstring("Input", "Enter the new line of code:", initialvalue=self.line_manager.code_lines[index])
-            if new_line:
-                self.line_manager.edit_line(index, new_line)
-                self.update_text_area()
-                self.saved = False
+        try:
+            index = simpledialog.askinteger("Input", f"Enter the index of the line to edit (1-{len(self.line_manager.code_lines)}):") - 1
+            if index is not None:
+                new_line = simpledialog.askstring("Input", "Enter the new line of code:", initialvalue=self.line_manager.code_lines[index])
+                if new_line:
+                    self.line_manager.edit_line(index, new_line)
+                    self.update_text_area()
+                    self.saved = False
+        except:
+            pass
 
     def delete_line(self):
-        index = simpledialog.askinteger("Input", "Enter the index of the line to delete (1-based):") - 1
-        if index is not None:
-            try:
-                self.line_manager.delete_line(index)
-                self.update_text_area()
-                self.saved = False
-            except IndexError:
-                messagebox.showerror("Error", "Invalid index provided.")
+        try:
+            index = simpledialog.askinteger("Input", f"Enter the index of the line to delete (1-{len(self.line_manager.code_lines)}):") - 1
+            if index is not None:
+                try:
+                    self.line_manager.delete_line(index)
+                    self.update_text_area()
+                    self.saved = False
+                except IndexError:
+                    messagebox.showerror("Error", "Invalid index provided.")
+        except:
+            pass
 
     def run_code(self):
         code = self.line_manager.get_code()
@@ -234,16 +246,22 @@ class CodeBuilderGUI:
         self.update_text_area()
 
     def shift_indent_right(self):
-        index = simpledialog.askinteger("Input", "Enter the line number to shift right (1-based):") - 1
-        if index is not None:
-            self.line_manager.increase_indent(index, self.indent_size)
-            self.update_text_area()
+        try:
+            index = simpledialog.askinteger("Input", f"Enter the line number to shift right (1-{len(self.line_manager.code_lines)}):") - 1
+            if index is not None:
+                self.line_manager.increase_indent(index, self.indent_size)
+                self.update_text_area()
+        except:
+            pass
 
     def shift_indent_left(self):
-        index = simpledialog.askinteger("Input", "Enter the line number to shift left (1-based):") - 1
-        if index is not None:
-            self.line_manager.decrease_indent(index, self.indent_size)
-            self.update_text_area()
+        try:
+            index = simpledialog.askinteger("Input", f"Enter the line number to shift left (1-{len(self.line_manager.code_lines)}):") - 1
+            if index is not None:
+                self.line_manager.decrease_indent(index, self.indent_size)
+                self.update_text_area()
+        except:
+            pass
 
     def update_text_area(self):
         self.text_area.configure(state=tk.NORMAL)
