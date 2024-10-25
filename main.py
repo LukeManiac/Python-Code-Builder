@@ -355,7 +355,7 @@ class CodeLineManager:
         indented_line = self.indent_line(line, self.indentation_level * 4)
         self.code_lines.append(indented_line)
 
-        if any(i in line for i in ["pass", "continue", "break", "return"]):
+        if line in ["pass", "continue", "break", "return"]:
             self.indentation_level = max(0, self.indentation_level - 1)
 
     def add_blank_line(self):
