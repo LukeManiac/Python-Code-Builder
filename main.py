@@ -329,18 +329,18 @@ texts = {
     ]
 }
 widths = {
-    "English":1000,
-    "French":1440,
-    "German":1380,
-    "Spanish":1380,
-    "Italian":1240,
-    "Dutch":1500,
-    "Portuguese":1380,
-    "Russian":1420,
-    "Japanese":1200,
-    "Chinese (traditional)":850,
-    "Chinese (simplified)":820,
-    "Korean":960
+    "English": 1000,
+    "French": 1440,
+    "German": 1380,
+    "Spanish": 1380,
+    "Italian": 1240,
+    "Dutch": 1500,
+    "Portuguese": 1380,
+    "Russian": 1420,
+    "Japanese": 1200,
+    "Chinese (traditional)": 850,
+    "Chinese (simplified)": 820,
+    "Korean": 960
 }
 
 class CodeLineManager:
@@ -403,6 +403,7 @@ class LanguageMenu:
         self.language_menu.resizable(False, False)
         self.language_menu.minsize(200, 100)
         self.language_menu.geometry("200x100")
+        self.language_menu.protocol("WM_DELETE_WINDOW", exit)
 
         # Language dropdown menu
         self.languages = ["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Russian", "Japanese", "Chinese (traditional)", "Chinese (simplified)", "Korean"]
@@ -427,6 +428,7 @@ class LanguageMenu:
         root = tk.Tk()
         root.minsize(widths[self.applanguage], 500)
         root.geometry(f"{widths[self.applanguage]}x500")
+        root.protocol("WM_DELETE_WINDOW", exit)
         app = CodeBuilderGUI(root, self.applanguage)
         root.mainloop()
 
@@ -448,11 +450,18 @@ class CodeBuilderGUI:
         self.frame.pack(expand=True, fill=tk.BOTH)
 
         # Create a vertical scrollbar
-        self.scrollbar = tk.Scrollbar(self.frame)
+        self.scrollbar = tk.Scrollbar(self.frame, orient=tk.VERTICAL)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Configure scrollbar
-        self.scrollbar.config(command=self.on_scroll)
+        self.scrollbar.config(command=self.yscroll)
+
+        # Create a horizontal scrollbar
+        self.scrollbar2 = tk.Scrollbar(self.frame, orient=tk.HORIZONTAL)
+        self.scrollbar2.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # Configure scrollbar
+        self.scrollbar2.config(command=self.xscroll)
 
         # Create line numbers text widget
         self.line_numbers = tk.Text(self.frame, bg='lightgrey', state=tk.DISABLED, width=1, height=20)
@@ -468,7 +477,7 @@ class CodeBuilderGUI:
         self.line_numbers.bind("<Button-5>", lambda e: "break")    # For Linux
 
         # Create text area
-        self.text_area = tk.Text(self.frame, wrap=tk.WORD, height=20, width=60, yscrollcommand=self.scrollbar.set, state=tk.NORMAL)
+        self.text_area = tk.Text(self.frame, height=20, width=60, xscrollcommand=self.scrollbar2.set, yscrollcommand=self.scrollbar.set, state=tk.NORMAL, wrap="none")
         self.text_area.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
         self.text_area.bind("<Button-1>", self.prevent_selection)
@@ -632,6 +641,7 @@ class CodeBuilderGUI:
         self.text_area.delete(1.0, tk.END)
         self.text_area.insert(tk.END, self.line_manager.get_code())
         self.text_area.configure(state=tk.DISABLED)
+        self.text_area.configure(xscrollcommand=self.scrollbar2.set, yscrollcommand=self.scrollbar.set)
         self.update_line_numbers()
 
     def update_line_numbers(self, event=None):
@@ -645,7 +655,11 @@ class CodeBuilderGUI:
 
         self.line_numbers.configure(state=tk.DISABLED, width=max_digits)
 
-    def on_scroll(self, *args):
+    def xscroll(self, *args):
+        self.text_area.xview(*args)
+        self.line_numbers.xview(*args)
+
+    def yscroll(self, *args):
         self.text_area.yview(*args)
         self.line_numbers.yview(*args)
 
