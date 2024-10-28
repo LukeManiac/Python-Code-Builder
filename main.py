@@ -403,7 +403,6 @@ class LanguageMenu:
         self.language_menu.resizable(False, False)
         self.language_menu.minsize(200, 100)
         self.language_menu.geometry("200x100")
-        self.language_menu.protocol("WM_DELETE_WINDOW", exit)
 
         # Language dropdown menu
         self.languages = ["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Russian", "Japanese", "Chinese (traditional)", "Chinese (simplified)", "Korean"]
@@ -428,7 +427,6 @@ class LanguageMenu:
         root = tk.Tk()
         root.minsize(widths[self.applanguage], 500)
         root.geometry(f"{widths[self.applanguage]}x500")
-        root.protocol("WM_DELETE_WINDOW", exit)
         app = CodeBuilderGUI(root, self.applanguage)
         root.mainloop()
 
