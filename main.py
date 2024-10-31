@@ -384,8 +384,8 @@ class CodeLineManager:
         self.code_lines = []
         self.indentation_level = 0  # To track current indentation level
 
-    def add_line(self, line):
-        if self.code_lines and self.code_lines[-1].strip().endswith(":"):
+    def add_line(self, line, ignore_indentation=False):
+        if not ignore_indentation and self.code_lines and self.code_lines[-1].strip().endswith(":"):
             self.indentation_level += 1
 
         indented_line = self.indent_line(line, self.indentation_level * 4)
@@ -509,6 +509,7 @@ class CodeBuilderGUI:
         self.line_numbers.bind("<MouseWheel>", lambda e: "break")  # For Windows
         self.line_numbers.bind("<Button-4>", lambda e: "break")    # For Linux
         self.line_numbers.bind("<Button-5>", lambda e: "break")    # For Linux
+        self.line_numbers.bind("<Shift-MouseWheel>", lambda e: "break")
 
         # Create text area
         self.text_area = tk.Text(self.frame, height=20, width=60, xscrollcommand=self.scrollbar2.set, yscrollcommand=self.scrollbar.set, state=tk.NORMAL, wrap="none")
@@ -522,6 +523,7 @@ class CodeBuilderGUI:
         self.text_area.bind("<MouseWheel>", lambda e: "break")  # For Windows
         self.text_area.bind("<Button-4>", lambda e: "break")    # For Linux
         self.text_area.bind("<Button-5>", lambda e: "break")    # For Linux
+        self.text_area.bind("<Shift-MouseWheel>", lambda e: "break")
 
         # Button frame
         self.button_frame = tk.Frame(master)
@@ -652,8 +654,10 @@ class CodeBuilderGUI:
         print(self.text_list[24])
 
     def new_code(self):
-        self.line_manager.code_lines.clear()
-        self.update_text_area()
+        self.line_manager.code_lines.clear()  # Clear existing lines in the manager
+        self.text_area.delete(1.0, tk.END)  # Clear the text area without disabling it
+        self.update_line_numbers()  # Refresh line numbers to show an empty state
+        self.update_text_area()  # Refresh text area to show an empty state
 
     def paste_code(self):
         try:
@@ -661,7 +665,7 @@ class CodeBuilderGUI:
             if clipboard_text:  # Check if clipboard is not empty
                 lines = clipboard_text.splitlines()  # Split clipboard text by lines
                 for line in lines:
-                    self.line_manager.add_line(line)  # Add each line from clipboard
+                    self.line_manager.add_line(line, ignore_indentation=True)  # Add each line without indentation rules
                 self.update_text_area()  # Refresh text area
             else:
                 messagebox.showinfo("Clipboard Empty", self.text_list[26])
